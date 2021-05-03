@@ -3,5 +3,5 @@
 *.egg
 *.egg-info
 
-test_control_pc.py
-test_cv.py
+control/test_control_pc.py
+model/test_cv.py
