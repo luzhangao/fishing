@@ -1,0 +1,7 @@
+*.py[cod]
+*.so
+*.egg
+*.egg-info
+
+test_control_pc.py
+test_cv.py
