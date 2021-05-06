@@ -35,7 +35,8 @@ vkey = {
     "9 key": 0x39,
 
     "Z key": 0x5A,
-    "ALT key": win32con.VK_MENU,
+    "ALT key": 0x12,
+    "space key": 0x20,
 
     "left mouse down": win32con.WM_LBUTTONDOWN,
     "left mouse up": win32con.WM_LBUTTONUP,

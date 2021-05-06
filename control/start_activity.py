@@ -12,12 +12,32 @@ key 5: use the bait.
 
 import win32gui
 import time
-import multiprocessing
-from multiprocessing import Process
+import random
+import threading
+from concurrent.futures import ThreadPoolExecutor
 from win32com import client
 from control.keyboard_control import MyPyKeyboard
 from control.match_template import MatchTemplate
 from control.save_template import SaveTemplate
+
+
+def random_action(hwnd, cnt):
+    """
+    Do some random actions to avoid log out.
+    :param hwnd: window handle
+           Get from win32gui.FindWindow(0, windows_name)
+    :param cnt: int
+    :return: None
+    """
+    if cnt % 100 == 0 or cnt % 100 == 3:
+        mpk = MyPyKeyboard(hwnd)
+        random_choice = random.randint(1, 4)
+        if random_choice == 1:
+            mpk.press_key("space key")
+        elif random_choice == 2:
+            mpk.press_key("3 key")
+        else:
+            pass
 
 
 def start(windows_name="魔兽世界"):
@@ -35,6 +55,7 @@ def start(windows_name="魔兽世界"):
             hwnd = win32gui.FindWindow(0, windows_name)
             shell = client.Dispatch("WScript.Shell")
             shell.SendKeys('%')
+            win32gui.SetForegroundWindow(hwnd)
             mpk = MyPyKeyboard(hwnd)
             if not is_full_screen:  # If not, full screen.
                 mpk.press_combo("ALT key", "Z key")
@@ -64,7 +85,7 @@ def start(windows_name="魔兽世界"):
             """
             shell = client.Dispatch("WScript.Shell")
             shell.SendKeys('%')
-            # win32gui.SetForegroundWindow(hwnd)
+            win32gui.SetForegroundWindow(hwnd)
             mpk = MyPyKeyboard(hwnd)
             mt = MatchTemplate(hwnd)
             if not is_full_screen:
@@ -75,6 +96,7 @@ def start(windows_name="魔兽世界"):
             cnt = 0
             while 1:
                 cnt += 1
+                random_action(hwnd, cnt)
                 if bait_end_time - bait_start_time >= 10 * 60:
                     mpk.press_key("5 key")
                     print("正在上鱼饵")
@@ -88,19 +110,18 @@ def start(windows_name="魔兽世界"):
                 """
                 If any float template can be found in the screen shot, keep matching it. If the float template can not 
                 be found in the latest screen shot, it means the fish bites the bait. However, each loop will cost 
-                almost 1s which is much longer than the time for biting the bait. So if there is only one process, the 
-                failure rate is very high. Hence, I used 3 processes in one second here.
+                almost 1s which is much longer than the time for biting the bait. So if there is only one 
+                process or thread, the failure rate is very high. Hence, I used 3 threads in one second here.
                 """
                 if tf and xl.any() and yl.any():
-                    quits = multiprocessing.Event()
-                    foundit = multiprocessing.Event()
-                    for i in range(1, 4):
-                        p = Process(target=mt.match, args=(tf, xl, yl, "temp_screenshot_%d.png" % i, quits, foundit, str(i)))
-                        p.start()
-                        time.sleep(0.3)
+                    thread_list = list()
+                    with ThreadPoolExecutor(max_workers=3) as executor:
+                        stop_thread = threading.Event()
+                        for i in range(1, 4):
+                            tr = executor.submit(mt.match, tf, xl, yl, "temp_screenshot_%d.png" % i, str(i), stop_thread)
+                            thread_list.append(tr)
+                            time.sleep(0.3)
                     # mt.match(ft, xl, yl)
-                    foundit.wait()
-                    quits.set()
                 time.sleep(2)
         else:
             print("输入不正确，请重新输入！")

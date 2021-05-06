@@ -7,10 +7,10 @@
 @description: Take a screen shot and match the template floats.
 """
 
+import time
 import numpy as np
 import cv2 as cv
 import win32gui
-from multiprocessing import Pool, TimeoutError
 from control.save_template import SaveTemplate
 from control.mouse_control import MyPyMouse
 from config.config import temp_path, template_path, match_threshold
@@ -18,6 +18,11 @@ from config.config import temp_path, template_path, match_threshold
 
 class MatchTemplate(SaveTemplate):
     def __init__(self, windows_hwnd):
+        """
+
+        :param windows_hwnd: window handle
+               Get from win32gui.FindWindow(0, windows_name)
+        """
         super().__init__(windows_hwnd)
         super().picture_name()
         # Compute the time current fishing costs. If the time > 30, restart fishing.
@@ -99,7 +104,7 @@ class MatchTemplate(SaveTemplate):
                         final_tf = tf
         return final_tf, xl, yl
 
-    def match(self, tf, xl, yl, picture_name, quits, foundit, process_name="1"):
+    def match(self, tf, xl, yl, picture_name, thread_name, stop_thread):
         """
         Match the screen shot with the chosen template in a loop until catch the fish or the time is more than 30s.
         :param tf: string
@@ -110,12 +115,10 @@ class MatchTemplate(SaveTemplate):
                The axis of matched pixels.
         :param picture_name: string
                The name of the picture, used to debug the code.
-        :param quits: multiprocessing.Event()
-               Used to communicate between processes.
-        :param foundit: multiprocessing.Event()
-               Used to communicate between processes.
-        :param process_name: string
+        :param thread_name: string
                The name of the process, used to debug the code.
+        :param stop_thread: multiprocessing.Event()
+               Used to communicate between processes.
         :return:
         """
         raw_x = np.median(xl)
@@ -128,9 +131,12 @@ class MatchTemplate(SaveTemplate):
         Used to compute the mean of elements numbers of loc[0] or loc[1]. If this mean changes rapidly, it means 
         the fish gets hooked.
         """
-        elements_number_list = list()
 
-        while not quits.is_set():
+        elements_number_list = list()
+        is_find_fish = False
+        is_time_over = False
+        print("Start thread %s" % thread_name)
+        while not stop_thread.is_set():
             self.get_screen_shot(picture_name)
             template = cv.imread(template_path + tf)  # Read fishing float template.
             # res = cv.matchTemplate(self.gray(img), self.gray(template), cv.TM_CCOEFF_NORMED)
@@ -140,52 +146,24 @@ class MatchTemplate(SaveTemplate):
             # print(len(loc[0]), len(loc[1]), len(xl), len(loc[0]) / np.mean(elements_number_list))
             # print("--------------", tf, x, y)
             if len(loc[0]) / np.mean(elements_number_list) <= 0.6:
-                print("进程%s发现鱼上钩，捕捉" % process_name)
+                print("Thread %s find the fish, catch" % thread_name)
                 mpm = MyPyMouse()
                 mpm.move_and_click(x=x, y=y, button=2, click_times=1, sleep_time_for_move=0.1,
                                    sleep_time_for_click=0.1)
-                foundit.set()
-            import time
+                stop_thread.set()
+                is_find_fish = True
             self.end_time = time.time()
             if self.end_time - self.start_time >= 30:
-                print("Process %s already 30s" % process_name)
+                print("Thread %s already 30s" % thread_name)
                 mpm = MyPyMouse()
                 mpm.move_and_click(x=x, y=y, button=2, click_times=1, sleep_time_for_move=0.1,
                                    sleep_time_for_click=0.1)
-                foundit.set()
+                stop_thread.set()
+                is_time_over = True
+        if not is_find_fish and not is_time_over:
+            print("Thread % s receive the signal to stop the thread" % thread_name)
 
 
 if __name__ == '__main__':
-    import win32api
-    import time
-    import multiprocessing
-    from multiprocessing import Process
-    from config.config import vkey
-
-    windows_name = "魔兽世界"
-    hwnd = win32gui.FindWindow(0, windows_name)
-    print("hwnd", hwnd)
-    left, top, right, bottom = win32gui.GetWindowRect(hwnd)
-    mt = MatchTemplate(hwnd)
-
-    win32gui.SetForegroundWindow(hwnd)  # 将窗口最前显示
-    print(win32api.GetCursorPos())  # print the position of the mouse
-    cnt = 0
-    while 1:
-        cnt += 1
-        win32gui.PostMessage(hwnd, vkey["key down"], vkey["4 key"], 0)  # press
-        win32gui.PostMessage(hwnd, vkey["key up"], vkey["4 key"], 0)  # release
-        time.sleep(0.5)
-        tf, xl, yl = mt.match_all()
-        if tf and xl.any() and yl.any():
-            pool = Pool(processes=4)
-            quits = multiprocessing.Event()
-            foundit = multiprocessing.Event()
-            for i in range(1, 4):
-                p = Process(target=mt.match, args=(tf, xl, yl, "temp_screenshot_%d.png" % i, quits, foundit))
-                p.start()
-                time.sleep(0.3)
-            foundit.wait()
-            quits.set()
-        time.sleep(1.5)
+    pass
 
