@@ -4,14 +4,16 @@
 @author: Zhangao Lu
 @contact:
 @time: 2021/4/26
+@description:
 """
 
 import win32con
 
 
-screen_shot_path = "../data/screenshot/"
-template_path = "../data/template/"
-temp_path = "../data/temp/"
+template_path = "../data/template/"  # A file folder to save all the fish float templates.
+temp_path = "../data/temp/"  # A temporary file folder to save the screen shots.
+
+match_threshold = 0.6  # The rate used in matching between the screen shot and fish float templates.
 
 
 # virtual key codes, for short, vkey
@@ -32,6 +34,9 @@ vkey = {
     "8 key": 0x38,
     "9 key": 0x39,
 
+    "Z key": 0x5A,
+    "ALT key": win32con.VK_MENU,
+
     "left mouse down": win32con.WM_LBUTTONDOWN,
     "left mouse up": win32con.WM_LBUTTONUP,
     "right mouse down": win32con.WM_RBUTTONDOWN,
@@ -39,8 +44,6 @@ vkey = {
     "left mouse button": win32con.MK_LBUTTON,
     "right mouse button": win32con.MK_RBUTTON,
 }
-
-
 
 
 if __name__ == '__main__':
