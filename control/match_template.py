@@ -162,6 +162,9 @@ class MatchTemplate(SaveTemplate):
                 is_time_over = True
         if not is_find_fish and not is_time_over:
             print("Thread % s receive the signal to stop the thread" % thread_name)
+            x = 0
+            y = 0
+        return x, y
 
 
 if __name__ == '__main__':

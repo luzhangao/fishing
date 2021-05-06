@@ -14,8 +14,10 @@ import win32gui
 import time
 import random
 import threading
+import concurrent
 from concurrent.futures import ThreadPoolExecutor
 from win32com import client
+from control.mouse_control import MyPyMouse
 from control.keyboard_control import MyPyKeyboard
 from control.match_template import MatchTemplate
 from control.save_template import SaveTemplate
@@ -49,7 +51,7 @@ def start(windows_name="魔兽世界"):
     """
     is_full_screen = False  # If False, press Alt+Z.
     while 1:
-        user_choice = input("选择1.生成鱼漂模板 2.钓鱼")
+        user_choice = input("Choose 1.Generate fish float template 2.Fishing")
         if user_choice == "1":
             # Get the window and bring it to front.
             hwnd = win32gui.FindWindow(0, windows_name)
@@ -62,15 +64,16 @@ def start(windows_name="魔兽世界"):
                 is_full_screen = True
             mpk.press_key("4 key")  # key 4: fishing.
             time.sleep(2)  # Casting a fishing rod will cost almost 2 seconds.
-            user_choice2 = input("按4调整鱼漂的位置直到找到一个满意的位置为止，按1截图")
+            user_choice2 = input("Press 4 until the fish float locate in a perfect place, "
+                                 "then press 1 take the screen shoot.")
             if user_choice2 == "1":
-                print("在弹出的截图窗口种双击鱼漂的中心点，然后按ESC退出")
+                print("Double click the center of the fish float in the pop-up window. Then press ESC to exit.")
                 # Save the template of fish float.
                 st = SaveTemplate(hwnd)
                 st.screen_shot()
                 st.save()
             else:
-                print("请按1截图")
+                print("Please press 1 to take a screen shoot.")
         elif user_choice == "2":
             # Record the time of bait and use it every 10 minutes.
             bait_start_time = time.time()
@@ -87,11 +90,12 @@ def start(windows_name="魔兽世界"):
             shell.SendKeys('%')
             win32gui.SetForegroundWindow(hwnd)
             mpk = MyPyKeyboard(hwnd)
+            mpm = MyPyMouse()
             mt = MatchTemplate(hwnd)
             if not is_full_screen:
                 mpk.press_combo("ALT key", "Z key")
             mpk.press_key("5 key")  # key 5: use the bait.
-            print("正在上鱼饵")
+            print("Using bait.")
             time.sleep(6)  # It costs 5s to use the bait.
             cnt = 0
             while 1:
@@ -99,7 +103,7 @@ def start(windows_name="魔兽世界"):
                 random_action(hwnd, cnt)
                 if bait_end_time - bait_start_time >= 10 * 60:
                     mpk.press_key("5 key")
-                    print("正在上鱼饵")
+                    print("Using bait.")
                     time.sleep(6)  # It spent 5s to use the bait.
                     bait_start_time = time.time()
                 else:
@@ -114,17 +118,32 @@ def start(windows_name="魔兽世界"):
                 process or thread, the failure rate is very high. Hence, I used 3 threads in one second here.
                 """
                 if tf and xl.any() and yl.any():
-                    thread_list = list()
+                    futures = list()
                     with ThreadPoolExecutor(max_workers=3) as executor:
                         stop_thread = threading.Event()
                         for i in range(1, 4):
-                            tr = executor.submit(mt.match, tf, xl, yl, "temp_screenshot_%d.png" % i, str(i), stop_thread)
-                            thread_list.append(tr)
+                            future = executor.submit(mt.match, tf, xl, yl, "temp_screenshot_%d.png" % i, str(i), stop_thread)
                             time.sleep(0.3)
-                    # mt.match(ft, xl, yl)
-                time.sleep(2)
+                            futures.append(future)
+                        # Handle each one as soon as it’s ready, even if they come out of order.
+                        # https://stackoverflow.com/questions/52082665/store-results-threadpoolexecutor
+                        futures, _ = concurrent.futures.wait(futures)
+                        for future in futures:
+                            result = future.result()
+                            x = result[0]
+                            y = result[1]
+                            if x and y:
+                                """
+                                At first, move and click the mouse was called in the method match(). However, when the
+                                threads find the float missing in the same time. They both call move_and_click(), and 
+                                that will cause the mouse moves unexpectedly. To solve this, I collect the returned 
+                                values of the mouse cursor. Then call move_and_click() only once now.
+                                """
+                                mpm.move_and_click(x=x, y=y, button=2, click_times=1, sleep_time_for_move=0.1,
+                                                   sleep_time_for_click=0.1)
+                time.sleep(1)
         else:
-            print("输入不正确，请重新输入！")
+            print("Wrong number, please type it again.")
 
 
 if __name__ == '__main__':
