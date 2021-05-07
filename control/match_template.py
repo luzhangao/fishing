@@ -147,17 +147,17 @@ class MatchTemplate(SaveTemplate):
             # print("--------------", tf, x, y)
             if len(loc[0]) / np.mean(elements_number_list) <= 0.6:
                 print("Thread %s find the fish, catch" % thread_name)
-                mpm = MyPyMouse()
-                mpm.move_and_click(x=x, y=y, button=2, click_times=1, sleep_time_for_move=0.1,
-                                   sleep_time_for_click=0.1)
+                # mpm = MyPyMouse()
+                # mpm.move_and_click(x=x, y=y, button=2, click_times=1, sleep_time_for_move=0.1,
+                #                    sleep_time_for_click=0.1)
                 stop_thread.set()
                 is_find_fish = True
             self.end_time = time.time()
             if self.end_time - self.start_time >= 30:
                 print("Thread %s already 30s" % thread_name)
-                mpm = MyPyMouse()
-                mpm.move_and_click(x=x, y=y, button=2, click_times=1, sleep_time_for_move=0.1,
-                                   sleep_time_for_click=0.1)
+                # mpm = MyPyMouse()
+                # mpm.move_and_click(x=x, y=y, button=2, click_times=1, sleep_time_for_move=0.1,
+                #                    sleep_time_for_click=0.1)
                 stop_thread.set()
                 is_time_over = True
         if not is_find_fish and not is_time_over:

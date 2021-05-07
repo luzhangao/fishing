@@ -27,7 +27,7 @@ class MyPyMouse(object):
         :return: None
         """
         self.m.move(x, y)
-        # time.sleep(sleep_time)
+        time.sleep(sleep_time)
 
     def click(self, x, y, button, n, sleep_time=0):
         """
@@ -45,7 +45,7 @@ class MyPyMouse(object):
         :return: None
         """
         self.m.click(x, y, button, n)
-        # time.sleep(sleep_time)
+        time.sleep(sleep_time)
 
     def move_and_click(self, x, y, button, click_times, sleep_time_for_move, sleep_time_for_click):
         """
@@ -70,6 +70,7 @@ class MyPyMouse(object):
             new_y = y + elm
             self.move(new_x, new_y, sleep_time_for_move)
             self.click(new_x, new_y, button, click_times, sleep_time_for_click)
+        time.sleep(0.5)
 
 
 if __name__ == '__main__':
