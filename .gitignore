@@ -160,8 +160,8 @@ model/test_cv.py
 data/
 wrap/
 dectector/raw_data/
-*/wandb/
-*/runs/
+dectector/yolov5/wandb/
+dectector/yolov5/runs/
 dectector/datasets/
-best.pt
+*.pt
 *.ini
