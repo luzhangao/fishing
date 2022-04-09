@@ -31,15 +31,22 @@ def random_action(hwnd, cnt):
     :param cnt: int
     :return: None
     """
+    mpk = MyPyKeyboard(hwnd)
     if cnt % 100 == 0 or cnt % 100 == 3:
-        mpk = MyPyKeyboard(hwnd)
-        random_choice = random.randint(1, 4)
+        random_choice = random.randint(1, 5)
         if random_choice == 1:
             mpk.press_key("space key")
         elif random_choice == 2:
             mpk.press_key("3 key")
+        elif random_choice == 3:
+            mpk.press_key("6 key")
+            time.sleep(1)
         else:
-            pass
+            mpk.press_key("6 key")
+            time.sleep(0.5)
+    else:
+        mpk.press_key("6 key")
+        time.sleep(0.5)
 
 
 def start(windows_name="魔兽世界"):
@@ -148,4 +155,5 @@ def start(windows_name="魔兽世界"):
 
 if __name__ == '__main__':
     start()
+
 
