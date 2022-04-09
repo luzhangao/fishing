@@ -163,5 +163,6 @@ dectector/raw_data/
 dectector/yolov5/wandb/
 dectector/yolov5/runs/
 dectector/datasets/
+!dectector/yolov5/data/
 *.pt
 *.ini

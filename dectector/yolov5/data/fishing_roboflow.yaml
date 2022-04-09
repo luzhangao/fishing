@@ -1,0 +1,10 @@
+# Train/val/test sets as 1) dir: path/to/imgs, 2) file: path/to/imgs.txt, or 3) list: [path/to/imgs1, path/to/imgs2, ..]
+
+
+path: ../datasets/fishing_roboflow  # dataset root dir
+train: train/images
+val: valid/images
+test: test/images
+
+nc: 2
+names: ['fish-float', 'fish-float-catched']
