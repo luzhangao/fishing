@@ -159,4 +159,9 @@ control/test_control_pc.py
 model/test_cv.py
 data/
 wrap/
-
+dectector/raw_data/
+*/wandb/
+*/runs/
+dectector/datasets/
+best.pt
+*.ini
