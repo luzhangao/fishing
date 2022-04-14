@@ -16,8 +16,6 @@ import os
 import torch
 
 
-
-
 # Model
 model = torch.hub.load(r'yolov5', 'custom', path=r'models\best.pt', source='local')
 
@@ -47,5 +45,3 @@ while True:
     if (cv2.waitKey(1) & 0xFF) == ord('q'):
         cv2.destroyAllWindows()
         break
-
-
