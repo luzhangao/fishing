@@ -7,4 +7,4 @@ val: valid/images
 test: test/images
 
 nc: 2
-names: ['fish-float', 'fish-float-catched']
+names: ['fish-float', 'fish-float-caught']

@@ -21,12 +21,22 @@ model = torch.hub.load(r'yolov5', 'custom', path=r'models\best.pt', source='loca
 file_path = r"raw_data"
 
 for img in os.listdir(file_path):
-    # Inference
-    results = model(file_path + r"\\" + img)
+    if img != "WoWScrnShot_033122_183244.jpg":
+        # Inference
+        results = model(file_path + r"\\" + img)
 
-    # Results
-    results.print()
-    results.show()
+        for pred in results.pred:
+            print(pred.cpu().numpy()[:, :4])
+            print(pred.cpu().numpy()[:, 4:])
+
+        # Results
+        # print(dir(results))
+        # for attr in dir(results):
+        #     print(f"{attr}", eval(f"results.{attr}"))
+
+        # results.print()
+        # results.show()
+        break
 
 
 if __name__ == '__main__':

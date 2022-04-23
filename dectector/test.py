@@ -36,11 +36,22 @@ while True:
 
     scr_img = np.array(sct_img)
     #cv2.imshow('screen', scr_img) # display screen in box
-
+    
     scr_img = model(scr_img)
+    for pred in scr_img.pred:
+        print(pred.cpu().numpy())
 
-    scr_img.print()
+    # scr_img.print()
+    # print(dir(scr_img))
+    # for attr in dir(scr_img):
+    #     print(f"{attr}", eval(f"scr_img.{attr}"))
+    # print(scr_img.xyxyn)
+    # print(scr_img.xyxyn[0])
+    # labels, cord_thres = scr_img.xyxyn[0][:, -1].numpy(), scr_img.xyxyn[0][:, :-1].numpy()
+    # print(labels, cord_thres)
+
     # scr_img.show()
+
 
     if (cv2.waitKey(1) & 0xFF) == ord('q'):
         cv2.destroyAllWindows()
