@@ -123,7 +123,7 @@ def start(windows_name="魔兽世界", threshold=0.8):
                                     x = int((row[0] + row[2]) / 2)
                                     y = int((row[1] + row[3]) / 2)
                                     mpm.move(x, y, config.MOVE_MOUSE_SLEEP_TIME)
-                                    mpm.click(x, y, 2, config.CLICK_MOUSE_SLEEP_TIME)
+                                    mpm.click(x, y, button=2, n=1, sleep_time=config.CLICK_MOUSE_SLEEP_TIME)
                                     print("click!")
                     else:
                         mpk.press_key("4 key")
