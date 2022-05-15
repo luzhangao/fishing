@@ -35,8 +35,8 @@ for img in os.listdir(file_path):
         #     print(f"{attr}", eval(f"results.{attr}"))
 
         # results.print()
-        # results.show()
-        break
+        results.show()
+        # break
 
 
 if __name__ == '__main__':

@@ -50,11 +50,13 @@ def random_action(hwnd, cnt):
         time.sleep(0.5)
 
 
-def start(windows_name="魔兽世界"):
+def start(windows_name="魔兽世界", threshold=0.8):
     """
 
     :param windows_name: string
            "魔兽世界", "Wow of Warcraft"
+    :param threshold: float
+            the classification threshold for the fishing float
     :return: None
     """
     is_full_screen = False  # If False, press Alt+Z.
@@ -89,7 +91,8 @@ def start(windows_name="魔兽世界"):
         while 1:
             cnt += 1
             random_action(hwnd, cnt)
-            if bait_end_time - bait_start_time >= 10 * 60 + 10:
+            print(int(bait_end_time - bait_start_time))
+            if bait_end_time - bait_start_time >= 10 * 60 + 15:
                 mpk.press_key("5 key")
                 print("Using bait.")
                 time.sleep(7)  # It spent 5s to use the bait.
@@ -101,7 +104,7 @@ def start(windows_name="魔兽世界"):
             sct_img = sct.grab(bounding_box)
             scr_img = np.array(sct_img)
             scr_img = model(scr_img)
-            if time.time() - fishing_start_time >= 3:
+            if time.time() - fishing_start_time >= 4:  # Skip the first 4 seconds
                 for pred in scr_img.pred:
                     # [[     978.93      183.25      1057.7      276.18     0.74201           0]
                     #  [      976.1      167.86      1058.9      283.29     0.25981           1]]
@@ -114,7 +117,7 @@ def start(windows_name="魔兽世界"):
                             for row in pred:
                                 # [x_min, y_min, x_max, y_max, threshold, class_id]
                                 # [     978.93      183.25      1057.7      276.18     0.74201           0]
-                                if row[4] >= 0.7 and row[5] == 1:
+                                if row[4] >= threshold and row[5] == 1:
                                     # Compute the center of bbox
                                     x = int((row[0] + row[2]) / 2)
                                     y = int((row[1] + row[3]) / 2)
@@ -133,10 +136,10 @@ def start(windows_name="魔兽世界"):
                         fishing_start_time = time.time()
                         time.sleep(1)
             continue
-            time.sleep(0.5)
+            # time.sleep(0.2)
 
 
 if __name__ == '__main__':
-    start()
+    start(threshold=0.8)
 
 
