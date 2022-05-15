@@ -21,6 +21,7 @@ from mss import mss
 from control.mouse_control import MyPyMouse
 from control.keyboard_control import MyPyKeyboard
 from control.match_template import MatchTemplate
+from config import config
 
 
 def random_action(hwnd, cnt):
@@ -66,7 +67,7 @@ def start(windows_name="魔兽世界", threshold=0.8):
         # Record the time of bait and use it every 10 minutes.
         bait_start_time = time.time()
         bait_end_time = time.time()
-        time.sleep(1)
+        time.sleep(config.GENERAL_SLEEP_TIME)
         hwnd = win32gui.FindWindow(0, windows_name)
         left, top, right, bottom = win32gui.GetWindowRect(hwnd)
         bounding_box = {'top': top, 'left': left, 'width': right, 'height': bottom}
@@ -84,7 +85,7 @@ def start(windows_name="魔兽世界", threshold=0.8):
 
         mpk.press_key("5 key")  # key 5: use the bait.
         print("Using bait.")
-        time.sleep(6)  # It costs 5s to use the bait.
+        time.sleep(config.BITE_SLEEP_TIME)  # It costs 5s to use the bait.
 
         cnt = 0
         fishing_start_time = time.time()
@@ -95,7 +96,7 @@ def start(windows_name="魔兽世界", threshold=0.8):
             if bait_end_time - bait_start_time >= 10 * 60 + 15:
                 mpk.press_key("5 key")
                 print("Using bait.")
-                time.sleep(7)  # It spent 5s to use the bait.
+                time.sleep(config.BITE_SLEEP_TIME)  # It spent 5s to use the bait.
                 print("Bait is used.")
                 bait_start_time = time.time()
             else:
@@ -104,7 +105,7 @@ def start(windows_name="魔兽世界", threshold=0.8):
             sct_img = sct.grab(bounding_box)
             scr_img = np.array(sct_img)
             scr_img = model(scr_img)
-            if time.time() - fishing_start_time >= 4:  # Skip the first 4 seconds
+            if time.time() - fishing_start_time >= config.START_FISHING_SLEEP_TIME:  # Skip the first x second to reduce false positive rate
                 for pred in scr_img.pred:
                     # [[     978.93      183.25      1057.7      276.18     0.74201           0]
                     #  [      976.1      167.86      1058.9      283.29     0.25981           1]]
@@ -121,20 +122,13 @@ def start(windows_name="魔兽世界", threshold=0.8):
                                     # Compute the center of bbox
                                     x = int((row[0] + row[2]) / 2)
                                     y = int((row[1] + row[3]) / 2)
-                                    mpm.move(x, y)
-                                    time.sleep(0.2)
-                                    mpm.click(x, y, 2, 1)
+                                    mpm.move(x, y, config.MOVE_MOUSE_SLEEP_TIME)
+                                    mpm.click(x, y, 2, config.CLICK_MOUSE_SLEEP_TIME)
                                     print("click!")
-                                    time.sleep(0.5)
-                                    # if len(positive_list) >= 2:
-                                    #     mpm.move(x, y)
-                                    #     mpm.click(x, y, 2, 1)
-                                    #     time.sleep(0.5)
-                                    #     positive_list = list()
                     else:
                         mpk.press_key("4 key")
                         fishing_start_time = time.time()
-                        time.sleep(1)
+                        # time.sleep(1)
             continue
             # time.sleep(0.2)
 
