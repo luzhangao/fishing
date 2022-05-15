@@ -43,12 +43,9 @@ def random_action(hwnd, cnt):
             pass
         elif random_choice == 3:
             mpk.press_key("6 key")
-            time.sleep(0.5)
         else:
             mpk.press_key("6 key")
-            time.sleep(0.5)
-    else:
-        time.sleep(0.5)
+            time.sleep(config.GENERAL_SLEEP_TIME)
 
 
 def start(windows_name="魔兽世界", threshold=0.8):
@@ -105,7 +102,7 @@ def start(windows_name="魔兽世界", threshold=0.8):
             sct_img = sct.grab(bounding_box)
             scr_img = np.array(sct_img)
             scr_img = model(scr_img)
-            if time.time() - fishing_start_time >= config.START_FISHING_SLEEP_TIME:  # Skip the first x second to reduce false positive rate
+            if time.time() - fishing_start_time >= config.START_FISHING_SLEEP_TIME:
                 for pred in scr_img.pred:
                     # [[     978.93      183.25      1057.7      276.18     0.74201           0]
                     #  [      976.1      167.86      1058.9      283.29     0.25981           1]]
