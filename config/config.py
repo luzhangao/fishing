@@ -83,7 +83,7 @@ vkey = {
 
 
 START_FISHING_SLEEP_TIME = 2  # Skip the first x second to reduce false positive rate
-MOVE_MOUSE_SLEEP_TIME = 0.2  # Add some sleep time to avoid moving mouse too fast
+MOVE_MOUSE_SLEEP_TIME = 0.5  # Add some sleep time to avoid moving mouse too fast
 CLICK_MOUSE_SLEEP_TIME = 0.5  # Add some sleep time to avoid clicking mouse too fast
 GENERAL_SLEEP_TIME = 1  # Sleep time for other cases
 BITE_SLEEP_TIME = 5 + 1  # It costs 5s to use the bait

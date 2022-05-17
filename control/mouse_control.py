@@ -65,12 +65,8 @@ class MyPyMouse(object):
         :return: None
         """
         # I found the center of the matched area is a bit upper left, so I balance the click point here.
-        # for elm in [9, 18]:
-        for elm in [18]:
-            new_x = x + elm
-            new_y = y + elm
-            self.move(new_x, new_y, sleep_time_for_move)
-            self.click(new_x, new_y, button, click_times, sleep_time_for_click)
+        self.move(x, y, sleep_time_for_move)
+        self.click(x, y, button, click_times, sleep_time_for_click)
         time.sleep(0.2)
 
 
