@@ -166,3 +166,4 @@ dectector/datasets/
 !dectector/yolov5/data/
 *.pt
 *.ini
+config/__pycache__/

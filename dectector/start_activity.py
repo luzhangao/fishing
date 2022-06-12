@@ -90,12 +90,13 @@ def start(windows_name="魔兽世界", threshold=0.8):
         cnt += 1
         random_action(hwnd, cnt)
         print(int(bait_end_time - bait_start_time))
-        if bait_end_time - bait_start_time >= 10 * 60 + 15:
+        if bait_end_time - bait_start_time >= 10 * 60 + 20:
             mpk.press_key("5 key")
             print("Using bait.")
             time.sleep(config.BITE_SLEEP_TIME)  # It spent 5s to use the bait.
             print("Bait is used.")
             bait_start_time = time.time()
+            bait_end_time = time.time()
         else:
             bait_end_time = time.time()
 
@@ -131,6 +132,6 @@ def start(windows_name="魔兽世界", threshold=0.8):
 
 
 if __name__ == '__main__':
-    start(threshold=0.85)
+    start(threshold=0.8)
 
 
