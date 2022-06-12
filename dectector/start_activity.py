@@ -20,7 +20,6 @@ from win32com import client
 from mss import mss
 from control.mouse_control import MyPyMouse
 from control.keyboard_control import MyPyKeyboard
-from control.match_template import MatchTemplate
 from config import config
 
 
@@ -76,7 +75,6 @@ def start(windows_name="魔兽世界", threshold=0.8):
 
     mpk = MyPyKeyboard(hwnd)
     mpm = MyPyMouse()
-    mt = MatchTemplate(hwnd)
     if not is_full_screen:
         mpk.press_combo("ALT key", "Z key")
 
