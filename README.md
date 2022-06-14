@@ -1,2 +1,2 @@
 # fishing
-A fishing tool for WOW. Only for research, not recommended for use on the official. This tool doesn't monitor the volume changes. Instead, it makes decisions by detect the fishing float.
+A fishing tool for WOW. It may be used for research and non-commercial purposes only. This tool doesn't monitor the volume. Instead, it makes decisions by detect the fishing float.
